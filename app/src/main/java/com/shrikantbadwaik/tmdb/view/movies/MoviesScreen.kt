@@ -20,12 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.shrikantbadwaik.tmdb.compose.MoviesUiState
-import com.shrikantbadwaik.tmdb.compose.SimpleMoviesViewModel
 import com.shrikantbadwaik.tmdb.data.remote.MovieDto
 
 @Composable
-fun MoviesScreen(viewModel: SimpleMoviesViewModel = viewModel()) {
+fun MoviesScreen(viewModel: MoviesViewModel = viewModel()) {
     val state: MoviesUiState by viewModel.uiState.collectAsState()
     when {
         state.isLoading -> LoadingView()

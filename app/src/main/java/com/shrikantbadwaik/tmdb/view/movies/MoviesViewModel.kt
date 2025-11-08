@@ -1,4 +1,4 @@
-package com.shrikantbadwaik.tmdb.compose
+package com.shrikantbadwaik.tmdb.view.movies
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +17,7 @@ data class MoviesUiState(
     val error: Throwable? = null
 )
 
-class SimpleMoviesViewModel : ViewModel() {
+class MoviesViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(MoviesUiState(isLoading = true))
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()

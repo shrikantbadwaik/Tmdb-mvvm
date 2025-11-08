@@ -1,67 +1,22 @@
 package com.shrikantbadwaik.tmdb.view.movies
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
-import android.content.res.Configuration
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import com.shrikantbadwaik.tmdb.BR
-import com.shrikantbadwaik.tmdb.R
-import com.shrikantbadwaik.tmdb.data.model.Movie
-import com.shrikantbadwaik.tmdb.databinding.ActivityMoviesBinding
-import com.shrikantbadwaik.tmdb.domain.Constants
-import com.shrikantbadwaik.tmdb.view.base.BaseActivity
-import com.shrikantbadwaik.tmdb.view.moviedetails.MovieDetailsActivity
-import com.shrikantbadwaik.tmdb.viewmodel.MoviesActivityViewModel
-import dagger.android.AndroidInjection
-import javax.inject.Inject
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 
-class MoviesActivity : BaseActivity<ActivityMoviesBinding, MoviesActivityViewModel>(), MoviesView {
-    @Inject
-    lateinit var factory: ViewModelProvider.Factory
-    @Inject
-    lateinit var adapter: MoviesRecyclerAdapter
-
-    private lateinit var activityBinding: ActivityMoviesBinding
-    private lateinit var moviesActivityViewModel: MoviesActivityViewModel
-
-    override fun injectDependency() {
-        AndroidInjection.inject(this)
-    }
-
-    override val layoutResource: Int = R.layout.activity_movies
-
-    override val viewModel: MoviesActivityViewModel
-        get() {
-            moviesActivityViewModel = ViewModelProviders.of(this, factory).get(MoviesActivityViewModel::class.java)
-            return moviesActivityViewModel
-        }
-
-    override val variableId: Int = BR.viewModel
-
-    override fun initView() {
-        activityBinding = viewDataBinding()
-        moviesActivityViewModel.attachView(this)
-        setupRecyclerView()
-        moviesActivityViewModel.getUpcomingMovies()
-        moviesActivityViewModel.getMovieListLiveData()
-            .observe(this, Observer { moviesActivityViewModel.addMovieListToObservable(it) })
-    }
-
-    private fun setupRecyclerView() {
-        activityBinding.activityMoviesRecyclerView.layoutManager =
-                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-                } else GridLayoutManager(this, 3)
-        activityBinding.activityMoviesRecyclerView.adapter = adapter
-        adapter.setAdapterCallback(object : MoviesRecyclerAdapter.AdapterCallback {
-            override fun showMovieDetails(movie: Movie) {
-                val intent = Intent(this@MoviesActivity, MovieDetailsActivity::class.java)
-                intent.putExtra(Constants.INTENT_EXTRAS_MOVIE, movie)
-                startActivity(intent)
+class MoviesActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    MoviesScreen()
+                }
             }
-        })
+        }
     }
 }

@@ -1,80 +1,87 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    compileSdkVersion 28
+    namespace 'com.shrikantbadwaik.tmdb'
+    compileSdk 34
+
     defaultConfig {
         applicationId "com.shrikantbadwaik.tmdb.mvvm.kotlin"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdk 24
+        targetSdk 34
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
         }
     }
-    dataBinding {
-        enabled = true
+
+    buildFeatures {
+        compose true
     }
-    kapt {
-        generateStubs = true
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+    packagingOptions {
+        resources {
+            excludes += ["/META-INF/{AL2.0,LGPL2.1}"]
+        }
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    final SUPPORT_LIBRARY_VERSION = '28.0.0'
-    final CONSTRAINT_LAYOUT_VERSION = '1.1.3'
-    final ARCH_LIFECYCLE_VERSION = '1.1.1'
-    final DAGGER_VERSION = '2.15'
-    final JAVAX_ANNOTATION_VERSION = '1.0'
-    final RXJAVA_VERSION = '2.1.12'
-    final RXANDROID_VERSION = '2.0.2'
-    final RETROFIT_VERSION = '2.4.0'
-    final OKHTTP_VERSION = '3.10.0'
-    final JACKSON_VERSION = '2.9.4'
-    final GLIDE_VERSION = '4.7.1'
+    implementation platform('androidx.compose:compose-bom:2024.09.03')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
-    implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
-    implementation "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
-    implementation "com.android.support.constraint:constraint-layout:$CONSTRAINT_LAYOUT_VERSION"
-    implementation "android.arch.lifecycle:extensions:$ARCH_LIFECYCLE_VERSION"
+    // Compose
+    implementation 'androidx.activity:activity-compose:1.9.2'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6'
+    implementation 'com.google.android.material:material:1.12.0'
 
-    implementation "com.google.dagger:dagger:$DAGGER_VERSION"
-    implementation "com.google.dagger:dagger-android-support:$DAGGER_VERSION"
-    kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-    kapt "com.google.dagger:dagger-android-processor:$DAGGER_VERSION"
-    compileOnly "javax.annotation:jsr250-api:$JAVAX_ANNOTATION_VERSION"
-    implementation "io.reactivex.rxjava2:rxjava:$RXJAVA_VERSION"
-    implementation "io.reactivex.rxjava2:rxandroid:$RXANDROID_VERSION"
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
 
-    implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
-    implementation "com.squareup.retrofit2:converter-jackson:$RETROFIT_VERSION"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
-    implementation "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
-    implementation "com.squareup.okhttp3:logging-interceptor:$OKHTTP_VERSION"
+    // Networking: Retrofit + Gson + OkHttp
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
 
-    implementation "com.fasterxml.jackson.core:jackson-core:$JACKSON_VERSION"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:$JACKSON_VERSION"
-    implementation "com.fasterxml.jackson.core:jackson-databind:$JACKSON_VERSION"
+    // Image loading for Compose
+    implementation 'io.coil-kt:coil-compose:2.6.0'
 
-    implementation "com.github.bumptech.glide:glide:$GLIDE_VERSION"
-    kapt "com.github.bumptech.glide:compiler:$GLIDE_VERSION"
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
-        transitive = true
-    }
-
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // Testing (optional keep minimal)
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
 }
